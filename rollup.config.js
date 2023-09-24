@@ -1,10 +1,14 @@
 import babel from "rollup-plugin-babel";
+import svelte from 'rollup-plugin-svelte';
+import resolve from '@rollup/plugin-node-resolve';
 // CommonJS
-import commonjs from "rollup-plugin-commonjs";
+// import commonjs from "rollup-plugin-commonjs";
+import commonjs from '@rollup/plugin-commonjs';
 // 预处理器
-import postcss from "rollup-plugin-postcss";
-import autoprefixer from "autoprefixer";
-import cssnano from "cssnano";
+// import postcss from "rollup-plugin-postcss";
+// import autoprefixer from "autoprefixer";
+import css from 'rollup-plugin-css-only';
+// import cssnano from "cssnano";
 // 压缩使用
 import {
   terser
@@ -22,13 +26,24 @@ const plugins = [
     exclude: "node_modules/**",
     runtimeHelpers: true,
   }),
+  svelte({
+    compilerOptions: {
+      // enable run-time checks when not in production
+      dev: process.env.NODE_ENV == 'dev'
+    }
+  }),
+  css({ output: `${PACKAGE_NAME}.css` }),
+  resolve({
+    browser: true,
+    dedupe: ['svelte']
+  }),
   commonjs(),
-  postcss({
-    plugins: [
-      autoprefixer(),
-      cssnano()
-    ],
-  })
+  // postcss({
+  //   plugins: [
+  //     autoprefixer(),
+  //     cssnano()
+  //   ],
+  // })
 ];
 
 if(process.env.NODE_ENV == 'dev') {
